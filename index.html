@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성빈이의 기록</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    /* 애플 스타일 UI */
+    :root {
+      --apple-blue: #0071e3;
+      --apple-light-gray: #f5f5f7;
+      --apple-dark-gray: #1d1d1f;
+      --apple-medium-gray: #86868b;
+      --apple-font: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--apple-font);
+      background-color: var(--apple-light-gray);
+      color: var(--apple-dark-gray);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .container {
+      max-width: 98%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    h1 {
+      font-size: 36px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .table-container {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      overflow: auto;
+      margin-bottom: 20px;
+      max-height: 80vh;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background-color: #f9f9f9;
+      padding: 10px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--apple-dark-gray);
+      border: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    td {
+      padding: 8px;
+      border: 1px solid #e5e5e5;
+      text-align: center;
+    }
+    
+    .upload-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .file-label {
+      padding: 12px 20px;
+      background-color: var(--apple-blue);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .file-label:hover {
+      background-color: #0058b0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚾ 성빈이의 기록</h1>
+    </header>
+    
+    <div class="upload-container">
+      <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls">
+      <label for="fileInput" class="file-label">엑셀 파일 선택</label>
+    </div>
+    
+    <div class="table-container">
+      <table id="dataTable">
+        <thead id="tableHeader"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const tableHeader = document.getElementById('tableHeader');
+    const tableBody = document.getElementById('tableBody');
+    
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {
+          type: 'array',
+          cellStyles: true,
+          cellDates: true,
+          raw: false
+        });
+        
+        const firstSheet = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheet];
+        
+        // 엑셀 데이터를 HTML 테이블로 변환 (원본 형식 유지)
+        const htmlTable = XLSX.utils.sheet_to_html(worksheet, {
+          editable: false,
+          id: 'tableData'
+        });
+        
+        // 결과를 테이블에 삽입
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlTable;
+        
+        const tempTable = tempDiv.querySelector('table');
+        
+        if (tempTable) {
+          // 헤더 행을 복사
+          const headerRow = tempTable.querySelector('thead tr');
+          if (headerRow) {
+            tableHeader.innerHTML = '';
+            tableHeader.appendChild(headerRow.cloneNode(true));
+          }
+          
+          // 본문 행을 복사
+          const bodyRows = tempTable.querySelectorAll('tbody tr');
+          tableBody.innerHTML = '';
+          bodyRows.forEach(row => {
+            tableBody.appendChild(row.cloneNode(true));
+          });
+        }
+      };
+      
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+</body>
+</html>
