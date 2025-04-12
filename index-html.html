@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>성빈이 기록 시스템</title>
+    <style>
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 380px;
+            text-align: center;
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #4299e1;
+            outline: none;
+        }
+        button {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            margin-top: 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #3182ce;
+        }
+        .error-message {
+            color: #e53e3e;
+            margin-top: 15px;
+            display: none;
+            font-size: 14px;
+        }
+        .logo {
+            margin-bottom: 20px;
+            font-size: 36px;
+            color: #4299e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">📊</div>
+        <h1>성빈이 기록 시스템</h1>
+        <div>
+            <input type="password" id="password" placeholder="비밀번호를 입력하세요">
+            <button onclick="checkPassword()">로그인</button>
+            <p id="error-message" class="error-message">비밀번호가 올바르지 않습니다.</p>
+        </div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            // 비밀번호를 여기서 설정하세요
+            const correctPassword = "1234"; // 원하는 비밀번호로 변경하세요
+            const enteredPassword = document.getElementById("password").value;
+            
+            if (enteredPassword === correctPassword) {
+                // 비밀번호가 맞으면 데이터 페이지로 이동
+                localStorage.setItem("authenticated", "true");
+                localStorage.setItem("auth_time", new Date().getTime());
+                window.location.href = "records.html";
+            } else {
+                // 비밀번호가 틀리면 오류 메시지 표시
+                document.getElementById("error-message").style.display = "block";
+            }
+        }
+        
+        // Enter 키를 눌러도 로그인 가능하게 설정
+        document.getElementById("password").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
+    </script>
+</body>
+</html>
